@@ -1,11 +1,11 @@
 package com.ucne.parcial2.data.repository
 
+import com.ucne.parcial2.data.local.entity.toTicketDto
 import com.ucne.parcial2.data.remote.TePrestoApi
 import com.ucne.parcial2.data.remote.dto.TicketDto
 import com.ucne.parcial2.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okio.IOException
 import retrofit2.HttpException
 
 
@@ -15,21 +15,24 @@ class TicketRepositoryImp @Inject constructor(
     private val api: TePrestoApi
 ): TicketRepository {
 
-    override suspend fun getTicket(): Flow<Resource<List<TicketDto>>> = flow {
-
-        try{
+    override  fun getTickets(): Flow<Resource<List<TicketDto>>> = flow {
+        try {
             emit(Resource.Loading())
-            val ticket = api.getTickets()
 
-            emit(Resource.Success(ticket))
-        }catch (e: HttpException){
-            emit(Resource.Error(e.message ?: "Error de Http General"))
-        }catch (e: IOException) {
+            val tickets =
+                api.getTickets()
+
+            emit(Resource.Success(tickets))
+        } catch (e: HttpException) {
+            //error general HTTP
+            emit(Resource.Error(e.message ?: "Error HTTP GENERAL"))
+        } catch (e: java.io.IOException) {
+            //debe verificar tu conexion a internet
             emit(Resource.Error(e.message ?: "verificar tu conexion a internet"))
         }
     }
 
-    override suspend fun putTicket(id: Int, ticketDto: TicketDto) {
+    override suspend fun putTickets(id: Int, ticketDto: TicketDto) {
         api.putTickets(id,ticketDto)
     }
 
@@ -39,5 +42,22 @@ class TicketRepositoryImp @Inject constructor(
 
     override suspend fun deleteTicket(id: Int) {
         api.deleteTickets(id)
+    }
+
+    override  fun getTicketsbyId(id: Int): Flow<Resource<TicketDto>> = flow {
+        try {
+            emit(Resource.Loading()) //indicar que estamos cargando
+
+            val tickets =
+                api.getTicketsbyId(id) //descarga las ocupaciones de internet, se supone quedemora algo
+
+            emit(Resource.Success(tickets)) //indicar que se cargo correctamente y pasarle las monedas
+        } catch (e: HttpException) {
+            //error general HTTP
+            emit(Resource.Error(e.message ?: "Error HTTP GENERAL"))
+        } catch (e: java.io.IOException) {
+            //debe verificar tu conexion a internet
+            emit(Resource.Error(e.message ?: "verificar tu conexion a internet"))
+        }
     }
 }

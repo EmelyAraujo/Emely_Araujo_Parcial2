@@ -17,7 +17,7 @@ class TicketEntity (
     val orden: Int
 )
 
-fun TicketEntity.toTicketDto(): TicketDto {
+ fun TicketEntity.toTicketDto(): TicketDto {
     return TicketDto(
         asunto = this.asunto,
         empresa = this.empresa,

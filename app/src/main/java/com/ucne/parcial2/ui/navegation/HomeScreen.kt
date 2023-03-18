@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AdsClick
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.*
@@ -15,14 +13,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ucne.parcial2.R
+import com.ucne.parcial2.ui.tickets.TicketScreen
+import com.ucne.parcial2.ui.tickets.TicketsListScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,17 +108,24 @@ fun NavigationGraph() {
         composable(route = Rutas.Home.ruta){
             HomeScreen(navController)
         }
-        composable(route = Rutas.TicketS.ruta){
+        composable(route = Rutas.TicketS.ruta + "/{id}",
+            arguments = listOf(
+                navArgument("id"){type = NavType.IntType})
+        ){capturar ->
+            val ticketId = capturar.arguments?.getInt("id")?:0
 
-            OcupacionScreen()
+            TicketScreen(ticketId = ticketId){
+                navController.navigate(Rutas.TicketS.ruta)
+            }
         }
 
         composable(route = Rutas.TicketC.ruta){
-            PersonaScreen()
+            TicketsListScreen(onNewTicket = {}){id ->
+                navController.navigate(Rutas.TicketC.ruta + "/${id}")
+            }
         }
 
-        composable(route = Rutas.OcupacionC.ruta){
-            ConsultaOcupacionScreen(onNew = {navController.navigate(route= Rutas.OcupacionR.ruta)})
-        }
     }
 }
+
+

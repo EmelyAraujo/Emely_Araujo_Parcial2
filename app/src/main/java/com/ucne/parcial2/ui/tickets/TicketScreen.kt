@@ -1,9 +1,6 @@
 package com.ucne.parcial2.ui.tickets
 
-import android.app.DatePickerDialog
-import android.icu.util.Calendar
 import android.os.Build
-import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,36 +8,52 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.twotone.Wallet
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.Calendar
-import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.ucne.parcial2.data.remote.dto.TicketDto
+import com.ucne.parcial2.ui.navegation.Rutas
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketBody(
-    putData: (TicketDto)-> Unit,
-    getData: (TicketDto)-> Unit,
-    postData: (TicketDto)-> Unit,
-    deleteData: (TicketDto) -> Unit,
-    data: TicketDto?
+fun TicketScreen(
+    ticketId: Int,
+    viewModel: TicketViewModelApi = hiltViewModel(),
+    sendData: () -> Unit
 ) {
-    val viewModel: TicketViewModelApi = viewModel()
+    remember {
+        viewModel.setTicket(ticketId)
+        0
+    }
+    Column(Modifier.fillMaxWidth()) {
+
+        TicketBody(viewModel = viewModel) {
+            sendData()
+        }
+    }
+}
 
 
-
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TicketBody(
+    viewModel: TicketViewModelApi,
+    sendData: () -> Unit,
+) {
+    val navController: NavHostController = rememberNavController()
+    var expanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val anio: Int
     val mes: Int
@@ -59,7 +72,6 @@ fun TicketBody(
             fecha = "$dia/${mes + 1}/$anio"
         }, anio, mes, dia
     )*/
-    /*----------------------------------------Code Start------------------------------------------------------*/
     Column(modifier = Modifier.fillMaxWidth())
     {
         Icon(
@@ -70,7 +82,7 @@ fun TicketBody(
                 .padding(4.dp)
                 .clickable {
                     scope.launch {
-                        navController.navigate(HomeScreen.TicketsList.route)
+                        navController.navigate(Rutas.TicketC.ruta)
                     }
                 }
         )
@@ -112,12 +124,40 @@ fun TicketBody(
             onValueChange = { viewModel.especificaciones = it },
             label = { Text("Especificaciones") })
 
-        OutlinedTextField(modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
+        OutlinedTextField(
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .padding(8.dp),
             value = viewModel.estatus,
-            onValueChange = { viewModel.estatus = it },
-            label = { Text("Estatus") })
+            enabled = false, readOnly = true,
+            label = { Text(text = "Estatus") },
+            onValueChange = { viewModel.estatus = it })
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+
+        ) {
+            viewModel.opcionesEstatus.forEach { opcion ->
+                DropdownMenuItem(
+                    text = {
+                        Text(text = opcion, textAlign = TextAlign.Center)
+                    },
+                    onClick = {
+                        expanded = false
+                        viewModel.estatus = opcion
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+            }
+        }
 
         OutlinedTextField(modifier = Modifier
             .padding(8.dp)
@@ -133,7 +173,7 @@ fun TicketBody(
                         .size(33.dp)
                         .padding(4.dp)
                         .clickable {
-                           // mDatePickerDialog.show()
+                            // mDatePickerDialog.show()
                         })
             },
             label = { Text(text = "Fecha") }
@@ -153,19 +193,18 @@ fun TicketBody(
                 .fillMaxWidth()
                 .wrapContentSize(Alignment.BottomCenter)
         ) {
+
             ExtendedFloatingActionButton(
                 modifier = Modifier
-                    .size(120.dp, 120.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .wrapContentSize(Alignment.Center),
-                text = { Text("Guardar") },
-                icon = { Icon(imageVector = Icons.Filled.Save, contentDescription = "Save") },
+                    .padding(8.dp),
+
+                content = { Icon(imageVector = Icons.Filled.Save, contentDescription = "Save") },
                 onClick = {
-                    val newData = TicketDto(viewModel.asunto, viewModel.empresa, viewModel.encargadoId.toInt(),viewModel.estatus, viewModel.fecha, viewModel.orden)
-                    viewModel.putData(viewModel.ticketId.toInt(),newData)
+                    viewModel.putTicket()
+                    sendData()
                 }
             )
         }
     }
 }
-}
+

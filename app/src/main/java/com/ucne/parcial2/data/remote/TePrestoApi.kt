@@ -18,4 +18,7 @@ interface TePrestoApi{
     @DELETE("api/Tickets{id}")
     suspend fun deleteTickets(@Path ("id")id: Int)
 
+    @GET("/api/tickets/{id}")
+    suspend fun getTicketsbyId(@Path("id") id: Int): TicketDto
+
 }
