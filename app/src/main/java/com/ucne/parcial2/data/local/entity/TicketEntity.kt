@@ -2,6 +2,7 @@ package com.ucne.parcial2.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ucne.parcial2.data.remote.dto.TicketDto
 
 @Entity(tableName = "Tickets")
 class TicketEntity (
@@ -16,7 +17,7 @@ class TicketEntity (
     val orden: Int
 )
 
-fun TicketEntity.toTicketDto(): TicketDto{
+fun TicketEntity.toTicketDto(): TicketDto {
     return TicketDto(
         asunto = this.asunto,
         empresa = this.empresa,

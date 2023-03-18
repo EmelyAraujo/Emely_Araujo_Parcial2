@@ -8,5 +8,4 @@ data class TicketDto(
     val estatus: String,
     val fecha: String,
     val orden: Int,
-    val ticketId: Int
 )
