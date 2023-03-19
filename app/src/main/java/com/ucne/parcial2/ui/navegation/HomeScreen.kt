@@ -1,5 +1,7 @@
 package com.ucne.parcial2.ui.navegation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +33,9 @@ fun HomeScreen(navController: NavHostController) {
 
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
 
     ) {
 
@@ -41,12 +44,12 @@ fun HomeScreen(navController: NavHostController) {
             actions = {
                 // RowScope here, so these icons will be placed horizontally
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.Logout , contentDescription = "Localized description")
+                    Icon(Icons.Filled.Logout, contentDescription = "Localized description")
                 }
 
             },
             navigationIcon = {
-                IconButton(onClick = {expanded = true  }) {
+                IconButton(onClick = { expanded = true }) {
                     Icon(Icons.Filled.Menu, contentDescription = null)
                 }
                 DropdownMenu(
@@ -57,7 +60,7 @@ fun HomeScreen(navController: NavHostController) {
                         text = { Text("Registro Tickets") },
 
                         onClick = {
-                            navController.navigate(route = Rutas.TicketS.ruta ){
+                            navController.navigate(route = Rutas.TicketS.ruta) {
                                 popUpTo("rutaHome")
                             }
                         },
@@ -70,7 +73,7 @@ fun HomeScreen(navController: NavHostController) {
                     DropdownMenuItem(
                         text = { Text("Consulta") },
                         onClick = {
-                            navController.navigate(route = Rutas.TicketC.ruta ){
+                            navController.navigate(route = Rutas.TicketC.ruta) {
                                 popUpTo("rutaHome")
 
                             }
@@ -78,7 +81,7 @@ fun HomeScreen(navController: NavHostController) {
                         leadingIcon = {
                             Icon(
                                 Icons.Outlined.People,
-                                contentDescription ="Consulta"
+                                contentDescription = "Consulta"
                             )
                         }
                     )
@@ -87,7 +90,8 @@ fun HomeScreen(navController: NavHostController) {
             }
 
         )
-        Image(painter = painterResource(id = R.drawable.ic_launcher_background),
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_background),
             contentDescription = "Logo Inicio",
             modifier = Modifier
                 .wrapContentSize(Alignment.CenterStart)
@@ -98,34 +102,32 @@ fun HomeScreen(navController: NavHostController) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph() {
-    val navController: NavHostController = rememberNavController()
+    val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Rutas.Home.ruta )
+        startDestination = Rutas.Home.ruta
+    )
     {
-        composable(route = Rutas.Home.ruta){
+        composable(route = Rutas.Home.ruta) {
             HomeScreen(navController)
         }
-        composable(route = Rutas.TicketS.ruta + "/{id}",
-            arguments = listOf(
-                navArgument("id"){type = NavType.IntType})
-        ){capturar ->
-            val ticketId = capturar.arguments?.getInt("id")?:0
-
-            TicketScreen(ticketId = ticketId){
-                navController.navigate(Rutas.TicketS.ruta)
+        composable(route = Rutas.TicketC.ruta) {
+            TicketsListScreen(onNewTicket = {}) { id ->
+                navController.navigate(Rutas.TicketS.ruta + "/${id}")
             }
         }
-
-        composable(route = Rutas.TicketC.ruta){
-            TicketsListScreen(onNewTicket = {}){id ->
-                navController.navigate(Rutas.TicketC.ruta + "/${id}")
+        composable(
+            route = Rutas.TicketS.ruta + "/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { capturar ->
+            val ticketId = capturar.arguments?.getInt("id") ?: 0
+            TicketScreen(ticketId = ticketId) {
+                navController.navigate(Rutas.TicketC.ruta)
             }
         }
-
     }
 }
-
 
