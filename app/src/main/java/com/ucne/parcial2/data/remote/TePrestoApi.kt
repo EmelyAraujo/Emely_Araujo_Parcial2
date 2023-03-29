@@ -6,7 +6,7 @@ import retrofit2.http.*
 
 
 interface TePrestoApi{
-    @GET("/api/tickets")
+    @GET("/api/Tickets")
     suspend fun getTickets(): List<TicketDto>
 
     @POST("/api/Tickets")

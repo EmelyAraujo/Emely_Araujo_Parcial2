@@ -89,23 +89,22 @@ fun TicketRow(ticket: TicketDto, onTicketClick: (Int) -> Unit) {
             Row() {
                 Text(
                     text = ticket.empresa,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Normal,
                     modifier = Modifier.weight(3f)
                 )
                 Text(
                     text = ticket.fecha.substring(0, 10),
                     style = MaterialTheme.typography.titleSmall,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(3f)
                 )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = ticket.asunto,
